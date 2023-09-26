@@ -29,7 +29,6 @@ def detectFaces(name):
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             faces = detector(gray)
-            print("length ", len(faces))
 
             if len(faces) == 1:            
                 for rect in faces:
@@ -38,10 +37,13 @@ def detectFaces(name):
                         
                         # calculate percentage of width available for vertical video:
                         width_percentage = ((9 / 16) * frame_height ) / frame_width
+                        vertical_width = width_percentage * frame_width
+                        padding = (frame_width - vertical_width) / 3
                         
                         # if the face takes up more than 60% of the vertical frame its good
                         if width_percentage * 0.4 < (width) / (frame_width) < width_percentage:
-                            suitable_frames.append(frame_num)
+                            if x > padding and x+width < frame_width-padding:
+                                suitable_frames.append(frame_num)
             
             cv2.imshow('Face Detection', frame)
 
@@ -60,13 +62,6 @@ def detectFaces(name):
 
     return suitable_frames
 
-def verifyFaces():
-    backend = 'retinaface'
-    video = cv2.VideoCapture('./output/output_0')
-
-    obj = DeepFace.verify(img1_path = "img1.jpg", img2_path = "img2.jpg", detector_backend = backends[4])
-
-    return
 
 if __name__ == "__main__":
-    verifyFaces()
+    pass

@@ -5,6 +5,17 @@ import sys
 from downscale import *
 from facedetector import *
 
+def clip_vertical(clip):
+    desired_width = int(clip.size[1] * 9 / 16)
+
+    # Calculate the left and right cropping boundaries
+    left_boundary = (clip.size[0] - desired_width) // 2
+    right_boundary = left_boundary + desired_width
+
+    cropped_clip = clip.crop(x_center=clip.size[0] / 2, width=desired_width)
+    return cropped_clip
+
+
 def cut_video(input_list, name):
     clip = VideoFileClip(name)
     for i in range(len(input_list)):
@@ -14,6 +25,7 @@ def cut_video(input_list, name):
             subclip = clip.subclip(start,end)
         else:
             subclip = clip.subclip(start, clip.duration)
+
         subclip.write_videofile("output/output_"+str(i)+".mp4")
 
 def find_series(numbers, fps):
