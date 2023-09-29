@@ -1,7 +1,7 @@
 import cv2
 import dlib
 
-def detectFaces(name):
+def detect_faces(name):
     detector = dlib.get_frontal_face_detector()
     suitable_frames = list()
     # Create an object to read
@@ -45,7 +45,7 @@ def detectFaces(name):
                             if x > padding and x+width < frame_width-padding:
                                 suitable_frames.append(frame_num)
             
-            cv2.imshow('Face Detection', frame)
+            # cv2.imshow('Face Detection', frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break

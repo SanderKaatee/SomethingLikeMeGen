@@ -1,9 +1,14 @@
 import os.path
 import csv
 import sys
+import time
+
 
 from downscale import *
 from facedetector import *
+from cropper import crop_videos
+from scene_splitter import split_scenes
+from videomaker import make_video
 
 def clip_vertical(clip):
     desired_width = int(clip.size[1] * 9 / 16)
@@ -49,32 +54,45 @@ def find_series(numbers, fps):
                 series.append((start, end))
             start = i + 1
             end = i + 1
-    
-    print("series:")
-    print(series)
+
     sections = []
 
     for i in range(len(series)):
-        if numbers[series[i][1]] - numbers[series[i][0]] > 7:
-            print("section is suitable:")
-            print((numbers[series[i][0]], numbers[series[i][1]]))
+        if numbers[series[i][1]] - numbers[series[i][0]] > (1.75 * fps):
             sections.append(((numbers[series[i][0]]) / fps,  (numbers[series[i][1]]) / fps)) 
     
     return sections
 
 def main():
-    name = "test.mp4"
+    name = "nocountry.mp4"
     # downscale and reduce fps to speed up the face detection process
-    fps = 3
-    # downscale(name,fps)
-    suitable_frames = detectFaces(name)
-    print("suitable_frames:")
-    print(suitable_frames)
-    suitable_sections = find_series(suitable_frames, fps)
-    print("suitable_sections:")
-    print(suitable_sections)
-    cut_video(suitable_sections, name)
+    fps = 2
 
+    start_time = time.time()
+    downscale(name,fps)
+    end_time = time.time()
+    downscale_time = end_time - start_time
+
+    start_time = time.time()
+    suitable_frames = detect_faces(name)
+    end_time = time.time()
+    face_detect_time = end_time - start_time
+
+    suitable_sections = find_series(suitable_frames, fps)
+    
+    start_time = time.time()
+    cut_video(suitable_sections, name)
+    end_time = time.time()
+    cut_video_time = end_time - start_time
+
+    
+    crop_videos()
+    split_scenes()
+    make_video()
+
+    print('Downscale: ', downscale_time)
+    print('Face_detect: ', face_detect_time)
+    print('Cut_video: ', cut_video_time)
     
 
 if __name__ == "__main__":
