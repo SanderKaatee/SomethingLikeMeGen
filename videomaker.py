@@ -1,18 +1,39 @@
 import os
 import random
+import cv2
+import re
+
 from moviepy.editor import concatenate_videoclips, VideoFileClip, AudioFileClip
 
 number = 0
+last_scene = None
+
+def get_scene_from_filename(filename):
+    match = re.search(r'output_(\d+?)_', filename)
+    if match:
+        return int(match.group(1))  # Convert the matched string to an integer
+    return None
+
 
 def get_random_video(videos, min_duration=0):
-    global number
+    global number, last_scene
     number += 1
     min_duration += 0.05
     """Get a random video from the list. If min_duration is specified, ensure the video is at least that long."""
     suitable_videos = [v for v in videos if VideoFileClip(v).duration >= min_duration]
+
+    # Further filter out videos from the same scene as the last selected video
+    if last_scene:
+        num_excluded_scenes = max(int(len(suitable_videos) * 0.10), 1)
+        excluded_scenes = set(range(last_scene - num_excluded_scenes, last_scene + num_excluded_scenes))
+        suitable_videos = [v for v in suitable_videos if get_scene_from_filename(v) not in excluded_scenes]
+
+
     if not suitable_videos:
         raise ValueError("No suitable videos found with the required minimum duration.")
     chosen_video = random.choice(suitable_videos)
+    last_scene = get_scene_from_filename(chosen_video)  # Update the last scene
+
     print(str(number) + ": " + chosen_video)
     videos.remove(chosen_video)
     return chosen_video

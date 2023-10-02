@@ -2,12 +2,10 @@ import cv2
 import numpy as np
 import os
 
-# TODO MAKE IT SAVE ALSO THE REMAINDER OF VIDEO
-
 def split_scenes():
     # Parameters
     threshold_value = 25.0  # Adjust this value based on your needs
-    min_scene_length = 0.7  # in seconds
+    min_scene_length = 0.8  # in seconds
 
     # List all the video files
     video_files = [f for f in os.listdir('./output') if f.endswith('.mp4')]
@@ -32,10 +30,9 @@ def split_scenes():
             if prev_frame is not None:
                 diff = cv2.absdiff(gray, prev_frame)
                 if np.mean(diff) > threshold_value:
-                    print("TRUE")
                     if cap.get(cv2.CAP_PROP_POS_FRAMES) - scene_start > min_frames:
                         scene_count += 1
-                        out_filename = os.path.join('./output', f"{video_file.split('.')[0]}_{scene_count}.mp4")
+                        out_filename = os.path.join('./output/', f"{video_file.split('.')[0]}_{scene_count}.mp4")
                         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                         out = cv2.VideoWriter(out_filename, fourcc, fps, (int(cap.get(3)), int(cap.get(4))))
                         for i in range(scene_start, int(cap.get(cv2.CAP_PROP_POS_FRAMES))-1):
@@ -49,7 +46,7 @@ def split_scenes():
         
         if cap.get(cv2.CAP_PROP_POS_FRAMES) - scene_start > min_frames:
             scene_count += 1
-            out_filename = os.path.join('./output', f"{video_file.split('.')[0]}_{scene_count}.mp4")
+            out_filename = os.path.join('./output/', f"{video_file.split('.')[0]}_{scene_count}.mp4")
             fourcc = cv2.VideoWriter_fourcc(*'mp4v')
             out = cv2.VideoWriter(out_filename, fourcc, fps, (int(cap.get(3)), int(cap.get(4))))
             for i in range(scene_start, int(cap.get(cv2.CAP_PROP_POS_FRAMES))-1):

@@ -2,6 +2,8 @@ import os.path
 import csv
 import sys
 import time
+import shutil
+
 
 
 from downscale import *
@@ -69,7 +71,7 @@ def main():
     fps = 2
 
     start_time = time.time()
-    downscale(name,fps)
+    # downscale(name,fps)
     end_time = time.time()
     downscale_time = end_time - start_time
 
@@ -85,8 +87,16 @@ def main():
     end_time = time.time()
     cut_video_time = end_time - start_time
 
-    
+    split_scenes()
     crop_videos()
+    for filename in os.listdir('./output'):
+        if filename.endswith('.mp4'):
+            source_path = os.path.join('./output', filename)
+            backup_path = os.path.join('./backup/cropped', filename)
+            
+            # Copy the file
+            shutil.copy2(source_path, backup_path)
+
     split_scenes()
     make_video()
 
