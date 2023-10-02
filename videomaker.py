@@ -50,8 +50,22 @@ def make_video():
     LONG_BEAT_DURATION = BEAT_DURATION * 8
     FOLDER_PATH = "./output"
 
-    # Get all video paths
-    all_videos = [os.path.join(FOLDER_PATH, f) for f in os.listdir(FOLDER_PATH) if f.endswith(('.mp4', '.avi', '.mov'))]
+    # Get all subfolders
+    subfolders = [os.path.join(FOLDER_PATH, d) for d in os.listdir(FOLDER_PATH) if os.path.isdir(os.path.join(FOLDER_PATH, d))]
+
+    max_videos = 0
+    selected_subfolder = None
+
+    # Iterate through each subfolder and count the number of video files
+    for subfolder in subfolders:
+        video_count = sum(1 for f in os.listdir(subfolder) if f.endswith(('.mp4', '.avi', '.mov')))
+        if video_count > max_videos:
+            max_videos = video_count
+            selected_subfolder = subfolder
+
+    # Get all video paths from the subfolder with the maximum number of videos
+    if selected_subfolder:
+        all_videos = [os.path.join(selected_subfolder, f) for f in os.listdir(selected_subfolder) if f.endswith(('.mp4', '.avi', '.mov'))]
 
     # Construct the video sequence
     final_clips = []

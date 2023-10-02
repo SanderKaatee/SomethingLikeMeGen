@@ -66,7 +66,7 @@ def crop_videos():
         
         cap.release()
         out.release()
-        # os.remove(os.path.join('./output', video_file))
+        os.remove(os.path.join('./output', video_file))
 
     print("Processing complete!")
 

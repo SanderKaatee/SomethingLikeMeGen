@@ -11,6 +11,7 @@ from facedetector import *
 from cropper import crop_videos
 from scene_splitter import split_scenes
 from videomaker import make_video
+from facerecognizer import recognize_faces
 
 def clip_vertical(clip):
     desired_width = int(clip.size[1] * 9 / 16)
@@ -97,7 +98,7 @@ def main():
             # Copy the file
             shutil.copy2(source_path, backup_path)
 
-    split_scenes()
+    recognize_faces()
     make_video()
 
     print('Downscale: ', downscale_time)

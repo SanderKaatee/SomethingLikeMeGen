@@ -40,8 +40,8 @@ def detect_faces(name):
                         vertical_width = width_percentage * frame_width
                         padding = (frame_width - vertical_width) / 3
                         
-                        # if the face takes up more than 60% of the vertical frame its good
-                        if width_percentage * 0.4 < (width) / (frame_width) < width_percentage:
+                        # if the face takes up more than 25% of the vertical frame its good
+                        if width_percentage * 0.25 < (width) / (frame_width) < width_percentage * 1.2:
                             if x > padding and x+width < frame_width-padding:
                                 suitable_frames.append(frame_num)
             
