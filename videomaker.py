@@ -6,7 +6,8 @@ import re
 from moviepy.editor import concatenate_videoclips, VideoFileClip, AudioFileClip
 
 number = 0
-last_scene = None
+scene_chances = {}
+
 
 def get_scene_from_filename(filename):
     match = re.search(r'output_(\d+?)_', filename)
@@ -16,23 +17,38 @@ def get_scene_from_filename(filename):
 
 
 def get_random_video(videos, min_duration=0):
-    global number, last_scene
+    global number, scene_chances
+    print(len(videos))
     number += 1
     min_duration += 0.05
-    """Get a random video from the list. If min_duration is specified, ensure the video is at least that long."""
+
     suitable_videos = [v for v in videos if VideoFileClip(v).duration >= min_duration]
 
-    # Further filter out videos from the same scene as the last selected video
-    if last_scene:
-        num_excluded_scenes = max(int(len(suitable_videos) * 0.10), 1)
-        excluded_scenes = set(range(last_scene - num_excluded_scenes, last_scene + num_excluded_scenes))
-        suitable_videos = [v for v in suitable_videos if get_scene_from_filename(v) not in excluded_scenes]
+    # Get the scenes of the suitable videos
+    scenes_of_suitable_videos = [get_scene_from_filename(v) for v in suitable_videos]
 
+    # Update scene_chances for scenes we haven't seen before
+    for scene in scenes_of_suitable_videos:
+        if scene not in scene_chances:
+            scene_chances[scene] = 100  # Default chance for new scenes
 
-    if not suitable_videos:
-        raise ValueError("No suitable videos found with the required minimum duration.")
-    chosen_video = random.choice(suitable_videos)
-    last_scene = get_scene_from_filename(chosen_video)  # Update the last scene
+    # Weighted random choice
+    weights = [scene_chances[get_scene_from_filename(v)] for v in suitable_videos]
+    if sum(weights) == 0:
+        raise ValueError("No suitable videos found with the required conditions.")
+    
+    chosen_video = random.choices(suitable_videos, weights=weights, k=1)[0]
+
+    # Increase the chance for each scene by 10% (up to 100%)
+    for scene in scene_chances:
+        scene_chances[scene] = min(scene_chances[scene] + 10, 100)
+
+    # Set the chance of scenes to 0
+    last_scene = get_scene_from_filename(chosen_video)
+    num_excluded_scenes = max(int(len(suitable_videos) * 0.10), 1)
+    excluded_scenes = set(range(last_scene - num_excluded_scenes, last_scene + num_excluded_scenes))
+    for scene in excluded_scenes:
+        scene_chances[scene] = 0
 
     print(str(number) + ": " + chosen_video)
     videos.remove(chosen_video)

@@ -67,15 +67,17 @@ def find_series(numbers, fps):
     return sections
 
 def main():
-    name = "nocountry.mp4"
+    name = "americanpsycho.mp4"
     # downscale and reduce fps to speed up the face detection process
-    fps = 2
+    fps = 4
 
+    print("Downscaling")
     start_time = time.time()
-    # downscale(name,fps)
+    downscale(name,fps)
     end_time = time.time()
     downscale_time = end_time - start_time
 
+    print("Detecting")
     start_time = time.time()
     suitable_frames = detect_faces(name)
     end_time = time.time()
@@ -83,13 +85,32 @@ def main():
 
     suitable_sections = find_series(suitable_frames, fps)
     
+    print("Cutting")
     start_time = time.time()
     cut_video(suitable_sections, name)
     end_time = time.time()
     cut_video_time = end_time - start_time
 
+    for filename in os.listdir('./output'):
+        if filename.endswith('.mp4'):
+            source_path = os.path.join('./output', filename)
+            backup_path = os.path.join('./backup/', filename)
+            
+            # Copy the file
+            shutil.copy2(source_path, backup_path)
+
+    start_time = time.time()
     split_scenes()
+    end_time = time.time()
+    split_video_time = end_time - start_time
+
+    start_time = time.time()
     crop_videos()
+    end_time = time.time()
+    crop_video_time = end_time - start_time
+
+
+
     for filename in os.listdir('./output'):
         if filename.endswith('.mp4'):
             source_path = os.path.join('./output', filename)
@@ -98,12 +119,25 @@ def main():
             # Copy the file
             shutil.copy2(source_path, backup_path)
 
+    start_time = time.time()
     recognize_faces()
+    end_time = time.time()
+    recognize_time = end_time - start_time
+
+    start_time = time.time()
     make_video()
+    end_time = time.time()
+    make_video_time = end_time - start_time
+
 
     print('Downscale: ', downscale_time)
     print('Face_detect: ', face_detect_time)
     print('Cut_video: ', cut_video_time)
+    print('Split_video: ', split_video_time)
+    print('Crop_video: ', crop_video_time)
+    print('Recognize: ', recognize_time)
+    print('Make videotime: ', make_video_time)
+    print('Total: ', downscale_time + face_detect_time + cut_video_time + split_video_time + crop_video_time + recognize_time + make_video_time)
     
 
 if __name__ == "__main__":
