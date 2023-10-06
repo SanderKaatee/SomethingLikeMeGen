@@ -2,22 +2,22 @@ import cv2
 import dlib
 import os
 
-def crop_videos():
+def crop_videos(destination_path):
     # Initialize face detector
     detector = dlib.get_frontal_face_detector()
 
     # List all the video files
-    video_files = [f for f in os.listdir('./output') if f.startswith('output_') and f.endswith('.mp4')]
+    video_files = [f for f in os.listdir(destination_path + '/output') if f.startswith('output_') and f.endswith('.mp4')]
 
     alpha = 0.1  # Smoothing factor, adjust as needed (0 < alpha <= 1)
 
     for video_file in video_files:
         print("Cropping", video_file)
-        cap = cv2.VideoCapture(os.path.join('./output', video_file))
+        cap = cv2.VideoCapture(os.path.join(destination_path + '/output', video_file))
         fps = int(cap.get(cv2.CAP_PROP_FPS))
         
         # Create a VideoWriter object to save the output video
-        out_filename = os.path.join('./output', f"cropped_{video_file}")
+        out_filename = os.path.join(destination_path + '/output', f"cropped_{video_file}")
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         height = int(cap.get(4))
         width = int((9/16) * height)
@@ -50,7 +50,8 @@ def crop_videos():
                 if smoothed_center_x == None:
                     smoothed_center_x = center_x
                 
-                smoothed_center_x = (1 - alpha) * smoothed_center_x + alpha * center_x
+                if abs(smoothed_center_x - center_x) < 0.1 * width:
+                    smoothed_center_x = (1 - alpha) * smoothed_center_x + alpha * center_x
                 
                 # Calculate the left and right boundaries for the cropped video
                 left_boundary = max(0, int(smoothed_center_x - half_width))
@@ -66,7 +67,7 @@ def crop_videos():
         
         cap.release()
         out.release()
-        os.remove(os.path.join('./output', video_file))
+        os.remove(os.path.join(destination_path + '/output', video_file))
 
     print("Processing complete!")
 

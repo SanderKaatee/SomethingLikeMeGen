@@ -12,7 +12,7 @@ face_detector = dlib.get_frontal_face_detector()
 shape_predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 face_rec_model = dlib.face_recognition_model_v1("dlib_face_recognition_resnet_model_v1.dat")
 
-def organize_videos_by_cluster(grouped_videos, base_path="./output"):
+def organize_videos_by_cluster(grouped_videos, base_path):
     for label, videos in grouped_videos.items():
         # Create a new directory for the cluster
         cluster_dir = os.path.join(base_path, f"faces_{label}")
@@ -66,8 +66,8 @@ def get_face_encoding(image):
     shape = shape_predictor(image, dets[0])
     return face_rec_model.compute_face_descriptor(image, shape)
 
-def recognize_faces():
-    video_folder = './output/'
+def recognize_faces(destination_path):
+    video_folder = destination_path + '/output/'
     video_files = [f for f in os.listdir(video_folder) if f.endswith(('.mp4', '.avi', '.mkv'))]
     encodings = {}
     
@@ -89,7 +89,7 @@ def recognize_faces():
     print("descriptor length", len(descriptors))
 
     # Cluster using Chinese Whispers
-    labels = dlib.chinese_whispers_clustering(descriptors, 0.5)
+    labels = dlib.chinese_whispers_clustering(descriptors, 0.45) # lower is stricter
     print(labels)
     num_classes = len(set(labels))
     print("Number of clusters: {}".format(num_classes))
@@ -110,7 +110,7 @@ def recognize_faces():
             print(f"  {video}")
     
     # Move videos to their respective folders
-    organize_videos_by_cluster(grouped_videos)
+    organize_videos_by_cluster(grouped_videos, destination_path + "/output/")
 
 
 if __name__ == "__main__":

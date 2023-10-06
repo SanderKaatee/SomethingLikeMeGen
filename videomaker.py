@@ -18,7 +18,6 @@ def get_scene_from_filename(filename):
 
 def get_random_video(videos, min_duration=0):
     global number, scene_chances
-    print(len(videos))
     number += 1
     min_duration += 0.05
 
@@ -60,11 +59,11 @@ def get_subclip(video_path, length):
     clip = clip.subclip(0.05, length+0.05)
     return clip
 
-def make_video():
+def make_video(destination_path, new_name):
     # Constants
     BEAT_DURATION = 4348 / 10000  # 435ms in seconds
     LONG_BEAT_DURATION = BEAT_DURATION * 8
-    FOLDER_PATH = "./output"
+    FOLDER_PATH = destination_path + "/output"
 
     # Get all subfolders
     subfolders = [os.path.join(FOLDER_PATH, d) for d in os.listdir(FOLDER_PATH) if os.path.isdir(os.path.join(FOLDER_PATH, d))]
@@ -112,7 +111,7 @@ def make_video():
     final_video = concatenate_videoclips(final_clips, method="compose")
     audio = AudioFileClip('cutsomethinglikeme.wav')
     final_video = final_video.set_audio(audio)
-    final_video.write_videofile("final_output.mp4", codec="libx264", audio_codec="aac")
+    final_video.write_videofile('./final_output/' + new_name + ".mp4", codec="libx264", audio_codec="aac")
 
 if __name__ == "__main__":
     make_video()

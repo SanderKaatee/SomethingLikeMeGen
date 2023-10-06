@@ -1,12 +1,12 @@
 import cv2
 import dlib
 
-def detect_faces(name):
+def detect_faces(name, destination_path):
     detector = dlib.get_frontal_face_detector()
     suitable_frames = list()
     # Create an object to read
     # from camera
-    video = cv2.VideoCapture("resized_" + name)
+    video = cv2.VideoCapture(destination_path + "resized_" + name)
 
     # We need to check if camera
     # is opened previously or not
