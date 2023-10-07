@@ -2,6 +2,7 @@ import os
 import random
 import cv2
 import re
+import sys
 
 from moviepy.editor import concatenate_videoclips, VideoFileClip, AudioFileClip
 
@@ -99,12 +100,12 @@ def make_video(destination_path, new_name):
 
     # 32 short beats
     for _ in range(4):
-        for _ in range(6):
+        for _ in range(5):
             video_path = get_random_video(all_videos, BEAT_DURATION)
             clip = get_subclip(video_path, BEAT_DURATION)
             final_clips.append(clip)
         video_path = get_random_video(all_videos, BEAT_DURATION)
-        clip = get_subclip(video_path, 2 * BEAT_DURATION)
+        clip = get_subclip(video_path, 3 * BEAT_DURATION)
         final_clips.append(clip)
 
     # Concatenate all clips and write to output
@@ -114,4 +115,10 @@ def make_video(destination_path, new_name):
     final_video.write_videofile('./final_output/' + new_name + ".mp4", codec="libx264", audio_codec="aac")
 
 if __name__ == "__main__":
-    make_video()
+    if len(sys.argv) > 1:
+        new_name = sys.argv[1]
+        destination_path = './' + new_name
+        make_video(destination_path, new_name)
+    else:
+        print("No arguments provided.")
+

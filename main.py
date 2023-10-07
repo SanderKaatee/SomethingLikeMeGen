@@ -132,8 +132,6 @@ def main():
         end_time = time.time()
         crop_video_time = end_time - start_time
 
-        split_scenes(destination_path)
-
         start_time = time.time()
         recognize_faces(destination_path)
         end_time = time.time()
