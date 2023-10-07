@@ -140,7 +140,10 @@ def main():
         recognize_time = end_time - start_time
 
         start_time = time.time()
-        make_video(destination_path, new_name)
+        try:
+            make_video(destination_path, new_name)
+        except Exception as e:
+                print(f"An error occurred: {e}")
         end_time = time.time()
         make_video_time = end_time - start_time
 
